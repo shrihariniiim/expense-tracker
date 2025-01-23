@@ -81,7 +81,7 @@ const PORT=8000
 
 const mongourl="mongodb://localhost:27017/Practice"
 
-mongoose.connect(mongourl)
+mongoose.connect("mongodb+srv://shriharinim:5gv8EHJJ38pB8KeQ@cluster0.2zim9.mongodb.net/Practice")
 .then(()=>{
     console.log("Db connected")
 app.listen(PORT,()=>{
@@ -99,7 +99,7 @@ const expenseSchema=new mongoose.Schema({
 });
 const expenseModel =mongoose.model("expense_tracker",expenseSchema)//collection-name,schema-name
 
-app.get('/api/expenses',async(req,res)=>{
+app.get('/api/expensesget',async(req,res)=>{
     const data=await expenseModel.find({})
     res.json(data)
 })
@@ -107,45 +107,33 @@ app.get('/api/expensesById/:id',async(req,res)=>{
     const {id}=req.params;
     if(id)
     {
-        const result=await expenseModel.findById(id);
+        const result=await expenseModel.findOne({id});
         res.json(result);
     }
 });
-app.put('/api/expensesUpdate/:id',async(req,res)=>{
-    const{id}=req.params;
-    const{title,amount}=req.body;
-    const updatedExpenses=await expenseModel.findOneAndUpdate(
+app.put("/api/expensesputt/:id", async(req, res) => {
+    const {id} = req.params;
+    const { title , amount } = req.body;
+    const updatedExpense = await expenseModel.findOneAndUpdate(
         {
-            id:id,
+            id : id,
         },
         {
-            title:title,
-            amount:amount,
+            title: title,
+            amount: amount,
         }
     )
-    res.status(200).json(updatedExpenses);
+    res.status(200).json(updatedExpense);
 })
 
-app.delete('/api/expensesdel/:id', async (req, res) => {
-    const { id } = req.params;
-
-    // Validate if the ID is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
-    }
-
-    // Perform the delete operation
-    const deletedExpense = await expenseModel.findByIdAndDelete(id);
-
-    
-    if (!deletedExpense) {
-        return res.status(404).json({ error: "Expense not found" });
-    }
-
-    res.status(200).json({ message: "Expense deleted successfully", deletedExpense });
-});
-
-
+app.delete('/api/expensesdel/:id' , async(req, res) => {
+    const {id}  = req.params;
+    const deleteExpense =  await expenseModel.findOneAndDelete({id})
+        if(deleteExpense)
+        {
+            res.status(200).json(deleteExpense);
+        }
+})
 
 app.post("/api/expenses",async(req,res)=>{
     const { title,amount}=req.body;
@@ -159,4 +147,3 @@ app.post("/api/expenses",async(req,res)=>{
     res.status(200).json(savedExpenses);
 
 });
-//hii
