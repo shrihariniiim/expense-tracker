@@ -148,7 +148,7 @@ app.post("/api/expenses",async(req,res)=>{
 
 });
 app.delete("/api/expensesdelall",async(req,res)=>{
-    const result=await expenseModel.findMany({});
+    const result=await expenseModel.deleteMany({});
     res.json(result);
 
 
